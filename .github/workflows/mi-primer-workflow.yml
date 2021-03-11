@@ -1,14 +1,25 @@
 name: Hola mundo
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 jobs:
   Mi-primer-job:
     name: Mi primer job
     runs-on: ubuntu-latest
+    outputs:
+      salida: ${{ steps.imprimir.outputs.respuesta }}
     steps:
-    - name: Imprimir 
+    - name: Imprimir
+      id: imprimir
       env:
         MI_VARIABLE: Hola mundo
-      run: |
-        echo $MI_VARIABLE.
+      run: echo "::set-output name=respuesta::${MI_VARIABLE}"
+
+  Mi-segundo-job:
+    needs: Mi-primer-job
+    name: Mi segundo job
+    runs-on: ubuntu-latest
+    steps:
+    - name: Imprimir
+      id: imprimir
+      run: echo ${{needs.Mi-primer-job.outputs.salida}}
